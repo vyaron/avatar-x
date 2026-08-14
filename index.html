@@ -1,25 +1,32 @@
-<html>
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 
 <head>
+  <meta charset="utf-8" />
   <title>Avatar Creator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="favicon.ico?c=4" />
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="lib/animate.css" />
 </head>
 
 <body onload="game.init()">
 
   <section class="page avatar-editor-page" hidden>
-    <div class="avatar-holder avatar-editor">
-      <img data-type="head" data-gender="f" src="img/avatar/head_f1.png" />
-      <img data-type="eye" data-gender="f" src="img/avatar/eye_f1.png" />
-      <img data-type="hair" data-gender="f"
+    <div class="avatar-holder avatar-editor" role="img" aria-label="האווטר שלי">
+      <img data-type="head" data-gender="f" src="img/avatar/head_f1.png" alt="" />
+      <img data-type="eye" data-gender="f" src="img/avatar/eye_f1.png" alt="" />
+      <img data-type="hair" data-gender="f" alt=""
         src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="mouth" data-gender="f" src="img/avatar/mouth_f1.png" />
-      <img data-type="glasses" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="accessory" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="necklace" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="boa" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+      <img data-type="mouth" data-gender="f" src="img/avatar/mouth_f1.png" alt="" />
+      <img data-type="glasses" alt=""
+        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+      <img data-type="accessory" alt=""
+        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+      <img data-type="necklace" alt=""
+        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+      <img data-type="boa" alt=""
+        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
     </div>
     <label>
       בן?
@@ -36,13 +43,12 @@
   <section class="page avatar-list-page" hidden>
     <ul class="avatar-list"></ul>
     <hr />
-    <button class="btn" onclick="game.gotoAvatarEditorPage()">הוסיפי +</button>
+    <button class="btn" onclick="game.createAvatar()">הוסיפי +</button>
   </section>
 
-  <section class="user-msg"></section>
+  <section class="user-msg" role="status" aria-live="polite"></section>
 
   <script type="module" src="js/app.js"></script>
-  <link rel="stylesheet" href="lib/animate.css">
 </body>
 
 </html>

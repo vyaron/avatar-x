@@ -4,20 +4,24 @@ export const storageService = {
     get,
     post,
     put,
-    remove,
-    postMany
+    remove
 }
 
 function query(entityType) {
-    var entities = JSON.parse(localStorage.getItem(entityType)) || []
-    return Promise.resolve(entities)
+    try {
+        const entities = JSON.parse(localStorage.getItem(entityType)) || []
+        return Promise.resolve(entities)
+    } catch (err) {
+        console.error(`Unreadable data for "${entityType}", starting empty`, err)
+        return Promise.resolve([])
+    }
 }
-
 
 function get(entityType, entityId) {
     return query(entityType)
         .then(entities => entities.find(entity => entity.id === entityId))
 }
+
 function post(entityType, newEntity) {
     newEntity.id = _makeId()
     return query(entityType)
@@ -27,21 +31,13 @@ function post(entityType, newEntity) {
             return newEntity
         })
 }
-function postMany(entityType, newEntities) {
-    return query(entityType)
-        .then(entities => {
-            newEntities = newEntities.map(entity => ((entity.id)? entity : {...entity, id: _makeId()}))
-            entities.push(...newEntities)
-            _save(entityType, entities)
-            return entities
-        })
-}
 
 function put(entityType, updatedEntity) {
     return query(entityType)
         .then(entities => {
             const idx = entities.findIndex(entity => entity.id === updatedEntity.id)
-            entities[idx] = {...entities[idx], ...updatedEntity}
+            if (idx === -1) throw new Error(`Cannot update, ${entityType} ${updatedEntity.id} not found`)
+            entities[idx] = { ...entities[idx], ...updatedEntity }
             _save(entityType, entities)
             return updatedEntity
         })
@@ -51,11 +47,12 @@ function remove(entityType, entityId) {
     return query(entityType)
         .then(entities => {
             const idx = entities.findIndex(entity => entity.id === entityId)
+            // splice(-1) would drop the last entity, so bail out when there is no match
+            if (idx === -1) throw new Error(`Cannot remove, ${entityType} ${entityId} not found`)
             entities.splice(idx, 1)
             _save(entityType, entities)
         })
 }
-
 
 function _save(entityType, entities) {
     localStorage.setItem(entityType, JSON.stringify(entities))
@@ -69,6 +66,3 @@ function _makeId(length = 5) {
     }
     return text
 }
-
-
-  

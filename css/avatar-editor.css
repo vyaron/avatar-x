@@ -1,12 +1,10 @@
-.avatar-editor-page .credit{
-    font-size: 8px;
-    text-align: left;
-}
 .avatar-editor-page {
     color: whitesmoke;
 }
-.avatar-holder {
-    /* position: relative; */
+
+.avatar-editor-page .credit{
+    font-size: 8px;
+    text-align: left;
 }
 
 .avatar-holder img{
@@ -15,7 +13,7 @@
 
 .avatar-editor {
     position: fixed;
-    left:0;
+    left: 0;
     width: 400px;
     height: 400px;
     background-color: #a195957d;
@@ -27,7 +25,6 @@
     bottom: 0px;
     left: 0px;
     z-index: -1;
-
 }
 
 
@@ -36,13 +33,14 @@
     padding: 1em;
     color: whitesmoke;
 }
-.avatar-parts-container h3{ 
+.avatar-parts-container h3{
     font-size: 2em;
     color: #3341c2;
 }
 .avatar-parts-container h3 span{
     color: darkgray;
     margin: 10px;
+    cursor: pointer;
  }
 
 
@@ -51,6 +49,7 @@
     display: inline-block;
     border: 1px darkgray dashed;
     border-radius: 4px;
+    cursor: pointer;
 }
 
 
@@ -67,7 +66,4 @@
     margin: 10px;
     padding: 5px;
     border-radius: 10px;
-}
-.avatar-preview .avatar-holder{
-    top:60px
 }

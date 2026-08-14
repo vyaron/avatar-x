@@ -3,15 +3,10 @@ html {
 }
 
 body {
-    direction: rtl;
     width: 100%;
     background-color: #111;
     user-select: none;
-    /* max-width: 1000px; */
-    /* margin: auto;
-    padding: 40px; */
     margin: 0;
-    /* font-size: 2em; */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -28,15 +23,6 @@ img {
     object-fit: cover;
 }
 
-a {
-    text-decoration: none;
-    color:black;
-}
-a:visited {
-    text-decoration: none;
-    color:black;
-}
-
 ul {
     list-style: none;
     padding: 0;
@@ -46,11 +32,14 @@ button {
     cursor: pointer;
     border: none;
     background: transparent;
-    outline: none;
     font-size: 1.2em;
     margin: 5px;
 }
 
+button:focus-visible {
+    outline: 2px solid whitesmoke;
+    outline-offset: 2px;
+}
 
 .btn {
     border: 1px solid #aaa;
@@ -65,11 +54,6 @@ button {
     user-select: none;
 }
 
-canvas {
-    outline: 1px solid pink;
-    background-color: #111;
-}
-
 .user-msg {
     position: fixed;
     bottom: -40px;
@@ -82,4 +66,3 @@ canvas {
 .user-msg.user-msg-open{
     bottom: 10px;
 }
-

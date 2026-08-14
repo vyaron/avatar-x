@@ -3,13 +3,16 @@ import { avatarController } from './controllers/avatar.controller.js'
 
 const pages = ['avatar-editor-page', 'avatar-list-page']
 
+var gUserMsgTimeout
+
+// Everything the inline handlers in index.html reach for
 window.game = {
     init,
-    gotoPage,
     gotoAvatarsPage,
     gotoAvatarEditorPage,
     showUserMsg,
 
+    createAvatar: avatarController.createAvatar,
     changeAvatarPart: avatarController.changeAvatarPart,
     selectAvatarPartSection: avatarController.selectAvatarPartSection,
     toggleGender: avatarController.toggleGender,
@@ -29,7 +32,7 @@ function gotoPage(pageName) {
         const elPage = document.querySelector(`.${page}`)
         elPage.hidden = page !== pageName
     })
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 function gotoAvatarsPage() {
@@ -44,9 +47,12 @@ function gotoAvatarEditorPage() {
 
 function showUserMsg(txt) {
     const el = document.querySelector('.user-msg')
-    el.innerText = txt;
+    el.innerText = txt
     el.classList.add('user-msg-open')
-    setTimeout(() => {
+
+    // A pending timeout from an earlier msg would cut this one short
+    clearTimeout(gUserMsgTimeout)
+    gUserMsgTimeout = setTimeout(() => {
         el.classList.remove('user-msg-open')
     }, 3000)
 }

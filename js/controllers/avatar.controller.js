@@ -2,11 +2,13 @@ import { avatarService } from "../services/avatar.service.js"
 import { utilService } from "../services/util.service.js"
 
 const emptyImg = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+
+// The avatar currently open in the editor. Carries an id only while editing a saved one
 var gAvatar = avatarService.getEmptyAvatar()
-window.gAvatar = gAvatar
 var gIntervals = []
 
 export const avatarController = {
+    createAvatar,
     renderEditorPage,
     changeAvatarPart,
     selectAvatarPartSection,
@@ -19,6 +21,12 @@ export const avatarController = {
     shareAvatar
 }
 
+// Start a brand new avatar - without this the editor keeps the last edited one (and its id)
+function createAvatar() {
+    gAvatar = avatarService.getEmptyAvatar()
+    window.game.gotoAvatarEditorPage()
+}
+
 function renderEditorPage() {
     renderAvatarParts()
     renderEditor()
@@ -28,19 +36,20 @@ function renderAvatarParts() {
     const avatarPartImgsMap = avatarService.getAvatarImgsMap(gAvatar.gender)
 
     const strHTMLs = Object.keys(avatarPartImgsMap).map(part => {
-        const strHTMLsItems = avatarPartImgsMap[part].map((url, idx) =>
+        const partHe = avatarService.getAvatarPartHe(part)
+        const strHTMLsItems = avatarPartImgsMap[part].map(url =>
             `
-                <img data-type="${part}" src="${url}" onclick="game.changeAvatarPart(this)">
+                <img data-type="${part}" src="${url}" alt="${partHe}" onclick="game.changeAvatarPart(this)">
                 `)
 
         return `<details class="item" onclick="game.selectAvatarPartSection(this.open)">
         <summary>
         <h3>
-            ${avatarService.getAvatarPartHe(part)}
-            <span data-type="${part}" onclick="game.changeAvatarPart(this); event.preventDefault()">
+            ${partHe}
+            <span data-type="${part}" title="בלי ${partHe}" onclick="game.changeAvatarPart(this); event.preventDefault()">
                 ✕
-                <img src="${emptyImg}" width="0" height="0"/>
-            </span>    
+                <img src="${emptyImg}" alt="" width="0" height="0"/>
+            </span>
         </h3>
         </summary>
         <ul>
@@ -57,40 +66,46 @@ function renderAvatarParts() {
 function selectAvatarPartSection(isOpen) {
     const elAllDetails = Array.from(document.querySelectorAll('.avatar-parts-container details'))
     const elActiveDetails = elAllDetails.find(d => d.open)
-      if (!isOpen && elActiveDetails) {
+    // isOpen is the state *before* the click, so !isOpen means one is about to open
+    if (!isOpen && elActiveDetails) {
         elActiveDetails.open = false
-      }
+    }
 }
 
 function changeAvatarPart(el) {
     const itemType = el.dataset.type
-    const targetEl = document.querySelector(`.avatar-editor [data-type=${itemType}]`)
+    const targetEl = document.querySelector(`.avatar-editor [data-type="${itemType}"]`)
 
     if (el.localName === 'span') el = el.querySelector('img')
-    // const src = (unset)? emptyImg : el.src
     targetEl.src = el.src
     const fileName = (el.src.includes('base64')) ? '' : el.src.substring(el.src.lastIndexOf('/') + 1)
     gAvatar.parts[itemType] = fileName
 }
 
 function toggleGender(isMale) {
-    const gender = (isMale) ? 'm' : 'f'
-    gAvatar = avatarService.getEmptyAvatar(gender)
-    renderAvatarParts()
+    gAvatar = avatarService.switchGender(gAvatar, (isMale) ? 'm' : 'f')
+    // The preview holds the previous gender's parts - both halves need a re-render
+    renderEditorPage()
 }
 
 async function saveAvatar() {
-    const avatar = { ...gAvatar }
+    const avatar = { ...gAvatar, parts: { ...gAvatar.parts } }
     if (!avatar.name) {
-        const name = prompt('שם?') || 'בבוש' + (Date.now() % 100)
-        avatar.name = name
+        avatar.name = prompt('שם?') || 'בבוש' + (Date.now() % 100)
     }
-    
+
     avatar.img = await composeAvatarImg()
-    await avatarService.save(avatar)
+
+    try {
+        await avatarService.save(avatar)
+    } catch (err) {
+        // Avatars are full size pngs - localStorage runs out of room after a few dozen
+        console.error('Could not save avatar:', err)
+        window.game.showUserMsg('לא הצלחתי לשמור')
+        return
+    }
 
     window.game.showUserMsg('שמרתי!')
-    _clearAvatarIntervals()
     window.game.gotoAvatarsPage()
 }
 
@@ -99,21 +114,22 @@ async function renderAvatars() {
     const avatars = await avatarService.query()
 
     const strHTMLs = avatars.map(avatar => {
+        const name = utilService.escapeHtml(avatar.name)
 
         return `<li class="avatar-preview">
         <h3>
-            ${avatar.name}
-            <button onclick="game.removeAvatar('${avatar.id}')">
+            ${name}
+            <button title="מחקי" onclick="game.removeAvatar('${avatar.id}')">
                 ✕
             </button>
-            <button onclick="game.editAvatar('${avatar.id}')">
+            <button title="ערכי" onclick="game.editAvatar('${avatar.id}')">
                 ✎
             </button>
-            <button onclick="game.shareAvatar('${avatar.id}')">
+            <button title="שתפי" onclick="game.shareAvatar('${avatar.id}')">
                 Share
             </button>
         </h3>
-        <img src="${avatar.img}"  />
+        <img src="${avatar.img}" alt="${name}" />
     </li>`
     })
 
@@ -122,7 +138,12 @@ async function renderAvatars() {
 
 
 async function editAvatar(id) {
-    gAvatar = await avatarService.getById(id)
+    const avatar = await avatarService.getById(id)
+    if (!avatar) {
+        window.game.showUserMsg('לא מצאתי את האווטר')
+        return
+    }
+    gAvatar = avatar
     const name = prompt('שם', gAvatar.name)
     if (name) {
         gAvatar.name = name
@@ -131,30 +152,50 @@ async function editAvatar(id) {
 }
 
 async function shareAvatar(id) {
-    gAvatar = await avatarService.getById(id)
-    // const base64url = "data:image/octet-stream;base64,/9j/4AAQSkZ...."
-    const base64url = gAvatar.img
-    const blob = await (await fetch(base64url)).blob()
-    const file = new File([blob], 'fileName.png', { type: blob.type })
-    navigator.share({
-    //   title: 'Hello',
-    //   text: 'Check out this image!',
-      files: [file]
-    })
+    const avatar = await avatarService.getById(id)
+    if (!avatar) {
+        window.game.showUserMsg('לא מצאתי את האווטר')
+        return
+    }
 
+    const blob = await (await fetch(avatar.img)).blob()
+    const file = new File([blob], `${avatar.name || 'avatar'}.png`, { type: blob.type })
+
+    // Web Share with files is mobile only - desktop has no navigator.share at all
+    if (!navigator.canShare || !navigator.canShare({ files: [file] })) {
+        window.game.showUserMsg('הדפדפן הזה לא יודע לשתף')
+        return
+    }
+    try {
+        await navigator.share({ files: [file] })
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            console.error('Could not share avatar:', err)
+            window.game.showUserMsg('השיתוף נכשל')
+        }
+    }
 }
 
 
 async function removeAvatar(id) {
-    await avatarService.remove(id)
+    try {
+        await avatarService.remove(id)
+    } catch (err) {
+        console.error('Could not remove avatar:', err)
+        window.game.showUserMsg('לא הצלחתי למחוק')
+        return
+    }
     window.game.showUserMsg('מחקתי!')
     renderAvatars()
 }
 
 function randomAvatar() {
-    gAvatar = avatarService.getRandomAvatar()
+    const { id, name } = gAvatar
+    gAvatar = { ...avatarService.getRandomAvatar(), name }
+    if (id) gAvatar.id = id
     window.game.showUserMsg('יצרתי!')
-    renderEditor()
+    // The random avatar may have flipped gender, so the parts menu needs a re-render too
+    renderEditorPage()
 }
 
 function _getPartUrl(avatarParts, partName) {
@@ -163,9 +204,9 @@ function _getPartUrl(avatarParts, partName) {
 
 function renderEditor() {
     const el = document.querySelector('.avatar-editor')
-    document.querySelector('.avatar-editor-page [name=is-male]').checked = (gAvatar.gender === 'm')
+    document.querySelector('.avatar-editor-page [name="is-male"]').checked = (gAvatar.gender === 'm')
     Object.keys(gAvatar.parts).forEach(part => {
-        el.querySelector(`[data-type=${part}]`).src = _getPartUrl(gAvatar.parts, part)
+        el.querySelector(`[data-type="${part}"]`).src = _getPartUrl(gAvatar.parts, part)
     })
 
     _animateAvatar()
@@ -177,48 +218,48 @@ function _clearAvatarIntervals() {
 }
 
 function _animateAvatar() {
+    // Every re-render would otherwise stack another set of intervals on top of the live ones
+    _clearAvatarIntervals()
+
     const el = document.querySelector('.avatar-editor')
-    var interval = setInterval(()=>{
-        utilService.animateCSS(el.querySelector(`[data-type=glasses]`), 'jello')
-    }, 1500)
-    gIntervals.push(interval)
-    interval = setInterval(()=>{
-        utilService.animateCSS(el.querySelector(`[data-type=eye]`), 'jello')
-    }, 2500)
-    gIntervals.push(interval)
-    interval = setInterval(()=>{
-        utilService.animateCSS(el.querySelector(`[data-type=hair]`), 'pulse')
-    }, 2000)
-    gIntervals.push(interval)
-    interval = setInterval(()=>{
-        utilService.animateCSS(el.querySelector(`[data-type=mouth]`), 'pulse')
-    }, 1750)
-    gIntervals.push(interval)
+    const animations = [
+        { part: 'glasses', animation: 'jello', every: 1500 },
+        { part: 'eye', animation: 'jello', every: 2500 },
+        { part: 'hair', animation: 'pulse', every: 2000 },
+        { part: 'mouth', animation: 'pulse', every: 1750 }
+    ]
+
+    animations.forEach(({ part, animation, every }) => {
+        const elPart = el.querySelector(`[data-type="${part}"]`)
+        gIntervals.push(setInterval(() => utilService.animateCSS(elPart, animation), every))
+    })
 }
 
-function composeAvatarImg() {
-    return new Promise((resolve) => {
-        const canvas = document.querySelector('.avatar-editor-page canvas')
-        const ctx = canvas.getContext('2d')
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+async function composeAvatarImg() {
+    const canvas = document.querySelector('.avatar-editor-page canvas')
+    const ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        const partsCount = Object.keys(gAvatar.parts).length
-        var count = 0
-        Object.keys(gAvatar.parts)
-        .filter(part => part)
-        .forEach(part => {
-            const img = new Image()
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-                count++
-                if (count === partsCount) {
-                    resolve(canvas.toDataURL())
-                }
-            }
-            img.src = _getPartUrl(gAvatar.parts, part)
-        })
+    const parts = avatarService.getPartsRenderOrder()
+        .filter(part => gAvatar.parts[part])
 
+    // Load first, draw after: drawing as each img lands would layer them in load order
+    const imgs = await Promise.all(parts.map(part => _loadImg(_getPartUrl(gAvatar.parts, part))))
+    imgs.filter(img => img)
+        .forEach(img => ctx.drawImage(img, 0, 0, canvas.width, canvas.height))
 
+    return canvas.toDataURL()
+}
+
+// Resolves with null instead of rejecting, so one missing part cannot stall the save
+function _loadImg(src) {
+    return new Promise(resolve => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = () => {
+            console.error(`Could not load avatar part: ${src}`)
+            resolve(null)
+        }
+        img.src = src
     })
-
 }
