@@ -1,0 +1,73 @@
+.avatar-editor-page .credit{
+    font-size: 8px;
+    text-align: left;
+}
+.avatar-editor-page {
+    color: whitesmoke;
+}
+.avatar-holder {
+    /* position: relative; */
+}
+
+.avatar-holder img{
+    position: absolute;
+}
+
+.avatar-editor {
+    position: fixed;
+    left:0;
+    width: 400px;
+    height: 400px;
+    background-color: #a195957d;
+    border-radius: 50%;
+}
+
+.avatar-editor img{
+    width: 400px;
+    bottom: 0px;
+    left: 0px;
+    z-index: -1;
+
+}
+
+
+.avatar-parts-container{
+    margin-top: 10px;
+    padding: 1em;
+    color: whitesmoke;
+}
+.avatar-parts-container h3{ 
+    font-size: 2em;
+    color: #3341c2;
+}
+.avatar-parts-container h3 span{
+    color: darkgray;
+    margin: 10px;
+ }
+
+
+.avatar-parts-container ul img{
+    width: 120px;
+    display: inline-block;
+    border: 1px darkgray dashed;
+    border-radius: 4px;
+}
+
+
+.avatar-list  {
+    list-style-type: none;
+    margin-bottom: 60px;
+}
+.avatar-list li {
+    display: inline-block;
+}
+
+.avatar-preview {
+    background-color: brown;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 10px;
+}
+.avatar-preview .avatar-holder{
+    top:60px
+}
