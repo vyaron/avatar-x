@@ -27,6 +27,9 @@
 - `editor`
 	- Canonical meaning: the avatar-building page (`.avatar-editor-page`) and its live
 	  preview (`.avatar-editor`).
+	- Sub-containers are presentational only, not new domain terms: `.editor-layout`
+	  (preview beside parts), `.editor-stage` (the preview surface), `.gender-switch`
+	  (the בן? checkbox), `.editor-actions` (the buttons).
 - `list`
 	- Canonical meaning: the saved-avatars page (`.avatar-list-page`).
 	- Use: `list`, not `gallery` or `collection`.

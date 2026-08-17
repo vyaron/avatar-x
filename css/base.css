@@ -17,6 +17,12 @@
     --preview-bg: brown;
     --msg-bg: black;
     --msg-text: whitesmoke;
+    --surface: #1c1c20;
+    --surface-border: #34343c;
+
+    --radius: 12px;
+    --gap: 16px;
+    --page-max: 1100px;
 }
 
 html {

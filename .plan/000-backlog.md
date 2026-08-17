@@ -17,4 +17,6 @@ Current queue:
 
 
 ## DONE
+- [x] Improve the design of the editor page (need some containers) — plan
+  `.plan/001-2026-08-17-editor-page-containers.md`
 
