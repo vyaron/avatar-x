@@ -7,9 +7,11 @@ Format:
 See `.doc/product-definition.md` for the acceptance criteria to check against.
 
 Current queue:
-- [ ] light-dark theme — was built and then removed on 2026-08-15; the CSS tokens stayed,
-      so re-adding it means the dark/light token blocks, the service, the controller, the
-      toggle (in the footer this time), and the pre-paint script
+- [ ] In avatar-list - change from a photo to an animated avatar like in editor
+- [ ] In avatar-list design the action-bar and a download link
+- [ ] Add a Delete All button for all saved avatars
+- [ ] light-dark theme 
+
 
 
 
