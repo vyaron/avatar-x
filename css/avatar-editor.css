@@ -1,40 +1,92 @@
 .avatar-editor-page {
     color: var(--text);
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding: var(--gap);
+}
+
+/* .page is width:100%, so the page padding has to come out of that width, not add to it */
+.avatar-editor-page, .avatar-editor-page * {
+    box-sizing: border-box;
 }
 
 .avatar-editor-page .credit{
     font-size: 8px;
-    text-align: left;
+    text-align: end;
+}
+
+.editor-layout {
+    display: grid;
+    gap: var(--gap);
+}
+
+.editor-stage {
+    display: grid;
+    justify-items: center;
+    gap: var(--gap);
+    padding: var(--gap);
+    background-color: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+}
+
+.gender-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    cursor: pointer;
+}
+
+.gender-switch input:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
 }
 
 .avatar-holder img{
     position: absolute;
 }
 
+/* The layers position against this holder - not against the stage around it */
 .avatar-editor {
-    position: fixed;
-    left: 0;
-    width: 400px;
-    height: 400px;
+    position: relative;
+    width: min(400px, 100%);
+    aspect-ratio: 1;
     background-color: var(--editor-bg);
     border-radius: 50%;
 }
 
 .avatar-editor img{
-    width: 400px;
-    bottom: 0px;
-    left: 0px;
-    z-index: -1;
+    width: 100%;
+    inset-block-end: 0;
+    inset-inline-start: 0;
 }
 
 
 .avatar-parts-container{
-    margin-top: 10px;
-    padding: 1em;
+    padding: var(--gap);
     color: var(--text);
+    background-color: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+}
+.avatar-parts-container details{
+    border-block-end: 1px solid var(--surface-border);
+}
+.avatar-parts-container details:last-of-type{
+    border-block-end: none;
+}
+.avatar-parts-container summary{
+    cursor: pointer;
+    padding-block: .3em;
+}
+.avatar-parts-container summary:focus-visible{
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
 }
 .avatar-parts-container h3{
-    font-size: 2em;
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.5em;
     color: var(--accent);
 }
 .avatar-parts-container h3 span{
@@ -43,13 +95,45 @@
     cursor: pointer;
  }
 
+/* Thumbs are direct children of the ul - the controller renders no li */
+.avatar-parts-container ul{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: var(--gap);
+    margin: 0;
+    padding-block: 0 var(--gap);
+}
 
 .avatar-parts-container ul img{
-    width: 120px;
-    display: inline-block;
+    width: 100%;
+    display: block;
     border: 1px var(--thumb-border) dashed;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5em;
+    margin-block-start: var(--gap);
+}
+
+.editor-actions .btn {
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .editor-layout {
+        grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+        align-items: start;
+    }
+
+    /* Keep the preview in view while the parts panel scrolls */
+    .editor-stage {
+        position: sticky;
+        inset-block-start: var(--gap);
+    }
 }
 
 

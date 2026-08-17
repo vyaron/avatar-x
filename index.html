@@ -13,29 +13,35 @@
 <body onload="game.init()">
 
   <section class="page avatar-editor-page" hidden>
-    <div class="avatar-holder avatar-editor" role="img" aria-label="האווטר שלי">
-      <img data-type="head" data-gender="f" src="img/avatar/head_f1.png" alt="" />
-      <img data-type="eye" data-gender="f" src="img/avatar/eye_f1.png" alt="" />
-      <img data-type="hair" data-gender="f" alt=""
-        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="mouth" data-gender="f" src="img/avatar/mouth_f1.png" alt="" />
-      <img data-type="glasses" alt=""
-        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="accessory" alt=""
-        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="necklace" alt=""
-        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-      <img data-type="boa" alt=""
-        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+    <div class="editor-layout">
+      <div class="editor-stage">
+        <div class="avatar-holder avatar-editor" role="img" aria-label="האווטר שלי">
+          <img data-type="head" data-gender="f" src="img/avatar/head_f1.png" alt="" />
+          <img data-type="eye" data-gender="f" src="img/avatar/eye_f1.png" alt="" />
+          <img data-type="hair" data-gender="f" alt=""
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+          <img data-type="mouth" data-gender="f" src="img/avatar/mouth_f1.png" alt="" />
+          <img data-type="glasses" alt=""
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+          <img data-type="accessory" alt=""
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+          <img data-type="necklace" alt=""
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+          <img data-type="boa" alt=""
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+        </div>
+        <label class="gender-switch">
+          בן?
+          <input name="is-male" type="checkbox" onchange="game.toggleGender(this.checked)" />
+        </label>
+      </div>
+      <section class="avatar-parts-container"></section>
     </div>
-    <label>
-      בן?
-      <input name="is-male" type="checkbox" onchange="game.toggleGender(this.checked)" />
-    </label>
-    <section class="avatar-parts-container"></section>
-    <button class="btn" onclick="game.saveAvatar()">שימרי</button>
-    <button class="btn" onclick="game.randomAvatar()">על המזל</button>
-    <button class="btn" onclick="game.gotoAvatarsPage()">חזרה לרשימה</button>
+    <div class="editor-actions">
+      <button class="btn" onclick="game.saveAvatar()">שימרי</button>
+      <button class="btn" onclick="game.randomAvatar()">על המזל</button>
+      <button class="btn" onclick="game.gotoAvatarsPage()">חזרה לרשימה</button>
+    </div>
     <p class="credit">Avatar graphics created by Noble Master Games</p>
     <canvas width="400" height="400" hidden></canvas>
   </section>
